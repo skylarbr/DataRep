@@ -6,7 +6,7 @@
         <script type="text/javascript" src="../js/d3.v3.js"></script>
         <style type="text/css">
             /* Any CSS style rules can go here */
-         .thursday {background-color: orange; font-family: sans-serif; font-size: 20; font-variant: bold}
+         .thursday {background-color: orange; font-family: sans-serif; font-size: 20; font-variant: black}
         </style>
     </head>
     <body>
@@ -21,16 +21,23 @@
         // Hey guys are you falling asleep yet?
         // this code is so confusing I don't understand
             // Your beautiful D3 code will go here
-            var hi = "THIS IS A TEST";
+            var hi = "LOOK AT ALL THIS GREAT DATA";
 
             d3.select('.thursday')
             .text(hi);
 
             var dataset = [ 5, 10, 15, 20, 25 ];
 
+            var colors = ["#FF6600", "#FF6633", "#FF6666", "#FF6699", "#FF66CC"];
+            var heatmapColor = d3.scale.linear()
+                .domain(d3.range(0, 1, 1.0 / (colors.length - 1)))
+                .range(colors);
+
+            var c = d3.scale.linear().domain(d3.extent(dataset)).range([0,1]);
+
             var w = 500;
-            var h = 1;
-                        
+            var h = 100;
+            
 
             var svg = d3.select('body')
             .append('svg')
@@ -41,14 +48,41 @@
                             .enter()
                             .append("circle");
                  circles.attr("cx", function(d, i) {
-                                                return (i * 60) + 25;
-                                        })
+                                                return (i + d * 10);
+                                            })
                                    .attr("cy", h/2)
                                    .attr("r", function(d) {
                                                 return d;
-                                   })
-                                   .attr("fill","lightblue")
-                                   .attr();
+                                            })
+                                   .attr("fill", function(d) {
+                                                return heatmapColor(c(d))
+                                            })
+                                   .attr("stroke", "grey")
+                                   
+                                   .attr("stroke-width", function(d) {
+                                                return d / 5;
+                                            });
+            var text = svg.selectAll("text")
+                            .data(dataset)
+                            .enter()
+                            .append("text")
+                 text.attr("x", function(d, i) {
+                                                return (i + d * 10);
+                                            })
+                                    .attr("y", function(d,h) {
+                                                return 50 + (d / 3) ;
+                                    })
+                                    .attr("font-family","sans-serif")
+                                    .attr("font-size", function(d) {
+                                                return d
+                                    })
+                                    .attr("fill","white")
+                                    .style("text-anchor","middle")
+                 text.text(function(d) {
+                                                return d;
+                                            });
+
+
 
         </script>
     </body>
