@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>d3 is awesome!</title>
+        <script type="text/javascript" src="../js/d3.v3.js"></script>
+        <style type="text/css">
+            /* Any CSS style rules can go here */
+         .thursday {background-color: orange; font-family: sans-serif; font-size: 20; font-variant: black}
+        </style>
+    </head>
+    <body>
+        <div class = 'firstCircle'></div>
+        <div class = 'thursday'>
+            First
+        </div>
+        
+<!--         <div class = 'section'>
+        </div> -->
+        <script type="text/javascript">
+        // Hey guys are you falling asleep yet?
+        // this code is so confusing I don't understand
+            // Your beautiful D3 code will go here
+            var hi = "LOOK AT ALL THIS GREAT DATA";
+
+            d3.select('.thursday')
+            .text(hi);
+
+            var dataset = [ 5, 10, 15, 20, 25, 30 , 35, 40, 45 , 50 ];
+
+            var colors = ["#FF6600", "#FF6666", "#FF66CC"];
+            var heatmapColor = d3.scale.linear()
+                .domain(d3.range(0, 1, 1.0 / (colors.length - 1)))
+                .range(colors);
+
+            var c = d3.scale.linear().domain(d3.extent(dataset)).range([0,1]);
+
+            var w = 600;
+            var h = 150;
+            
+
+            var svg = d3.select('body')
+            .append('svg')
+            .attr('width',800)
+            .attr('height',800);
+            var circles = svg.selectAll("circle")
+                            .data(dataset)
+                            .enter()
+                            .append("circle");
+                 circles.attr("cx", function(d, i) {
+                                                return (d * d / 3.7);
+                                            })
+                                   .attr("cy", h/2)
+                                   .attr("r", function(d) {
+                                                return d;
+                                            })
+                                   .attr("fill", function(d) {
+                                                return heatmapColor(c(d))
+                                            })
+                                   .attr("stroke", "grey")
+                                   
+                                   .attr("stroke-width", function(d) {
+                                                return d / 5;
+                                            });
+            var text = svg.selectAll("text")
+                            .data(dataset)
+                            .enter()
+                            .append("text")
+                 text.attr("x", function(d, i) {
+                                                return (d * d / 3.7);
+                                            })
+                                    .attr("y", function(d,h) {
+                                                return 75 + (d / 3) ;
+                                    })
+                                    .attr("font-family","sans-serif")
+                                    .attr("font-size", function(d) {
+                                                return d
+                                    })
+                                    .attr("fill","white")
+                                    .style("text-anchor","middle")
+                 text.text(function(d) {
+                                                return d;
+                                            });
+
+
+
+        </script>
+    </body>
+</html>

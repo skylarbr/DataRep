@@ -1,0 +1,78 @@
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>d3 is awesome!</title>
+        <script type="text/javascript" src="../js/d3.v3.js"></script>
+        <style type="text/css">
+            /* Any CSS style rules can go here */
+         .thursday {background-color: orange; font-family: sans-serif; font-size: 20; font-variant: black
+                }
+        </style>
+    </head>
+    <body>
+    <p>Woah there!</p>
+        <script type="text/javascript">
+        d3.select("p")
+            .append("p")
+            .text("D3 is running! :)");
+
+    var dataset;
+        d3.csv("TEST.csv", function(error, data) {
+
+        if (error) {  //If error is not null, something went wrong.
+          console.log(error);  //Log the error.
+        } else {      //If no error, the file loaded correctly. Yay
+            dataset = data;
+            console.log(data[1]);
+    var nameICareAbout = "A";
+    var numberICareAbout = 0
+        for (i = 0;i<data.length; i++){ 
+            if(data[i].Name == nameICareAbout){
+                var numberICareAbout = numberICareAbout + parseInt(data[i].Value);
+            }
+        };
+    console.log(numberICareAbout);
+    //Width and height
+    var w = 300;
+    var h = 8300;
+    var svg1 = d3.select("body")
+            .append("svg")
+            .attr("width", 150)
+            .attr("height", h);
+    var svg2 = d3.select("body")
+            .append("svg")
+            .attr("width", w)
+            .attr("height", h);
+        }
+    var textCity = svg1.selectAll("text")
+                            .data(dataset)
+                            .enter()
+                            .append("text")
+                textCity.attr("x", 80)
+                        .attr("y", function(d, i) {
+                                                return (i * 15) + 15 ;
+                                    })
+                        .attr("transform", function(d,i) {
+                                                return "rotate(30 20, " + 15 * i + ")"
+                                            })
+                        .style("text-anchor","middle")
+                textCity.text(function(d) {
+                                                return d.Name;
+                                            })
+    var textNum = svg2.selectAll("text")
+                            .data(dataset)
+                            .enter()
+                            .append("text")
+                textNum.attr("x", 5)
+                        .attr("y", function(d, i) {
+                                                return (i * 15) + 70 ;
+                                    })
+                textNum.text(function(d) {
+                                                return "Number of Registrations:  " + d.Value;
+                                            });
+        });
+      
+
+        </script>
+    </body>
+</html>
