@@ -24,17 +24,47 @@
         } else {      //If no error, the file loaded correctly. Yay
             dataset = data;
             console.log(data[1]);
-    var nameICareAbout = "A";
-    var numberICareAbout = 0
+    
+    var Names = []
+    for (i = 0;i<data.length; i++){ 
+            Names[i] = data[i].Name} //generates an array of all Names
+    console.log("List of All Names: " + Names)
+
+
+    function onlyUnique(value, index, self) { 
+    return self.indexOf(value) === index;
+        } 
+    var uniqueNames = Names.filter( onlyUnique ); //finds unique names
+    console.log("Unique Names: " + uniqueNames)
+
+    function valueConsolidation(givenName, i) { 
+    //consolodates the Value for all values of a given Name
+        var total = 0;
         for (i = 0;i<data.length; i++){ 
-            if(data[i].Name == nameICareAbout){
-                var numberICareAbout = numberICareAbout + parseInt(data[i].Value);
-            }
-        };
-    console.log(numberICareAbout);
+            if(data[i].Name == givenName){
+                total = total + parseInt(data[i].Value);
+            }else{
+
+            }}
+         return total;
+     } 
+    console.log("Sum of All B's: " + valueConsolidation("B"))
+ 
+    var Totals = []
+    for (i = 0; i<uniqueNames.length; i++){
+        Totals[i]= valueConsolidation(uniqueNames[i])
+    } //creates a new aray with the sums of all the different Names
+
+
+    console.log(Totals)
+
     //Width and height
     var w = 300;
     var h = 8300;
+    var svgCircle = d3.select("body")
+            .append("svg")
+            .attr("width", 2000)
+            .attr("height", 1400);
     var svg1 = d3.select("body")
             .append("svg")
             .attr("width", 150)
@@ -44,6 +74,20 @@
             .attr("width", w)
             .attr("height", h);
         }
+    var totalsCircles = svgCircle.selectAll("sad")  //draw circles with the newly parsed data values, the scale difference makes it weird!
+                            .data(Totals)
+                            .enter()
+                            .append("circle");
+                    totalsCircles.attr("cx", function(d,i) {
+                                                return  200 * i + 600;
+                    })
+                                .attr("cy", 700)
+                                .attr("r", function(d) {
+                                                return d/2; 
+                                            })
+                                .attr("fill", "rgba(0, 255, 0, 0.1)")
+                                .attr("stroke", "black");
+
     var textCity = svg1.selectAll("text")
                             .data(dataset)
                             .enter()
