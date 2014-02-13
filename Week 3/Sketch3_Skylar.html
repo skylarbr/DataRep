@@ -1,0 +1,123 @@
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>d3 is awesome!</title>
+        <script type="text/javascript" src="../js/d3.v3.js"></script>
+        <style type="text/css">
+            /* Any CSS style rules can go here */
+         .thursday {background-color: orange; font-family: sans-serif; font-size: 20; font-variant: black
+                }
+        </style>
+    </head>
+    <body>
+    <p>Woah there!</p>
+        <script type="text/javascript">
+        d3.select("p")
+            .append("p")
+            .text("D3 is running! :)");
+
+    var dataset;
+        d3.csv("TEST.csv", function(error, data) {
+
+        if (error) {  //If error is not null, something went wrong.
+          console.log(error);  //Log the error.
+        } else {      //If no error, the file loaded correctly. Yay
+            dataset = data;
+            console.log(data[1]);
+    
+    var Names = []
+    for (i = 0;i<data.length; i++){ 
+            Names[i] = data[i].Name} //generates an array of all Names
+    console.log("List of All Names: " + Names)
+
+
+    function onlyUnique(value, index, self) { 
+    return self.indexOf(value) === index;
+        } 
+    var uniqueNames = Names.filter( onlyUnique ); //finds unique names
+    console.log("Unique Names: " + uniqueNames)
+
+    function valueConsolidation(givenName, i) { 
+    //consolodates the Value for all values of a given Name
+        var total = 0;
+        for (i = 0;i<data.length; i++){ 
+            if(data[i].Name == givenName){
+                total = total + parseInt(data[i].Value);
+            }else{
+
+            }}
+         return total;
+     } 
+    console.log("Sum of All B's: " + valueConsolidation("B"))
+ 
+    var Totals = []
+    for (i = 0; i<uniqueNames.length; i++){
+        Totals[i]= valueConsolidation(uniqueNames[i])
+    } //creates a new aray with the sums of all the different Names
+    console.log(Totals)
+
+    var graphData = Totals
+
+    var colors = ["#FF6600", "#FF6666", "#FF66CC"];
+    var heatmapColor = d3.scale.linear()
+                .domain(d3.range(0, 1, 1.0 / (colors.length - 1)))
+                .range(colors);
+    var c = d3.scale.linear().domain(d3.extent(graphData)).range([0,1]);
+
+    //Width and height
+    var w = 300;
+    var h = 8300;
+    var svgBars = d3.select("body")
+            .append("svg")
+            .attr("width", 2000)
+            .attr("height", 1400);
+
+        }
+    var totalsBars = svgBars.selectAll("sad")  //draw circles with the newly parsed data values, the scale difference makes it weird!
+                            .data(graphData)
+                            .enter()
+                            .append("rect");
+                    totalsBars.attr("x", function(d,i) {
+                                                return  35 * i + 5;
+                                        })
+                                .attr("y", function(d) {
+                                                return 300 - (d/10);
+                                        })
+                                .attr("width", 30)
+                                .attr("height", function(d) {
+                                                return d/10; 
+                                            })
+                                .attr("fill", function(d) {
+                                                return heatmapColor(c(d))
+                                            })
+                                .attr("stroke", "black");
+
+    var textLable = svgBars.selectAll("text")
+                            .data(uniqueNames)
+                            .enter()
+                            .append("text")
+                textLable.attr("x", function(d,i) {
+                                                return  35 * i + 20;
+                                        })
+                        .attr("y", 290)
+                        .attr("font-family", "sans-serif")
+                        .attr("fill", "white")
+                        .style("text-anchor","middle")
+                textLable.text(function(d) {
+                                                return d;
+                                            })
+
+        })
+d3.selectAll("rect")
+    .on("click", function() {
+        svgBars.selectAll("rect")
+           .data(graphData)
+           .attr("fill", "green"
+           );
+
+    });
+      
+
+        </script>
+    </body>
+</html>
