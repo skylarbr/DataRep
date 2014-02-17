@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>D3: Linear scales with a scatterplot</title>
+		<script type="text/javascript" src="../js/d3.v3.js"></script>
+		<style type="text/css">
+			/* No style rules here yet */
+		</style>
+	</head>
+	<body>
+		<script type="text/javascript">
+
+			//Width and height
+			var w = 800;
+			var h = 800;
+
+			var dataset = [
+							[5, 20], [480, 90], [250, 50], [100, 33], [330, 95],
+							[410, 12], [475, 44], [25, 67], [85, 21], [220, 88]
+							];
+			var otherDataset = [
+							[5, 20], [480, 90], [250, 50], [100, 33], [330, 95]
+						  ];						  
+
+			//Create scale functions
+			var xScale = d3.scale.linear()
+								 .domain([0, d3.max(dataset, function(d) { return d[0]; })])
+								 .range([10, w-10]);
+
+			//Create scale functions
+			var otherxScale = d3.scale.linear()
+								 .domain([0, d3.max(otherDataset, function(d) { return d[0]; })])
+								 .range([10, w-10]);
+
+			var yScale = d3.scale.linear()
+								 .domain([0, d3.max(dataset, function(d) { return d[1]; })])
+								 .range([0, h]);
+
+			//Create SVG element
+			var svg = d3.select("body")
+						.append("svg")
+						.attr("width", w)
+						.attr("height", h);
+
+//make some first circles
+//give them one dataset
+			svg.selectAll("circle")
+			   .data(dataset)
+			   .enter()
+			   .append("circle")
+			   .attr("class", "firstCircle")
+			   .attr("cx", function(d) {
+			   		return xScale(d[0]);
+			   })
+			   .attr("cy", function(d) {
+			   		return h/4;
+			   })
+			   .attr("r", 10);
+//a button
+			svg
+			.append("rect")
+			.attr("class","button")
+			.attr("x", 20)
+			.attr("y", 20)
+			.attr("width",40)
+			.attr("height",40)
+			.style("fill","yellow")
+//make some more circles
+//with another data set
+//so we can make circles based on another dataset or set of variables as well
+			svg.selectAll("otherCircle")
+			   .data(otherDataset)
+			   .enter()
+			   .append("circle")
+			   .attr("class", "otherCircle");
+
+			 d3.selectAll(".otherCircle")
+			   .attr("cx", function(d) {
+			   		return otherxScale(d[0]);
+			   })
+			   .attr("cy", function(d) {
+			   		return h/2;
+			   })
+			   .attr("r", 10)
+			   .attr("fill", "blue")
+			   .attr("opacity", .4);
+//remove the first circles by clicking on the other circles
+			d3.selectAll(".otherCircle")
+				.on("click", function(){
+					d3.selectAll(".firstCircle")
+					.transition()
+					.attr("r",function(d,i){
+						return d[0]/5;
+					})
+
+					//or remove them totally:
+					.remove();
+				});
+////remove the other circles when the other circles are clicked
+			// d3.selectAll(".otherCircle")
+			// 	.on("click", function(){
+			// 		d3.selectAll(".otherCircle")
+			// 		.transition()
+			// 		.attr("r",1)
+			// 		.remove();
+			// 	});
+//////////////////
+
+////OPTION 1
+// //click the button and add new circles that have new data
+// 			d3.selectAll('.button').on("click", function(){
+// 			console.log("button")
+// 			var newCircles = svg.selectAll("newCircle")
+// 			   .data(dataset)
+// 			   .enter()
+// 			   .append("circle")
+// 			   .attr("class", "newCircle")
+// 			   .attr("cx", function(d) {
+// 			   		return xScale(d[0]);
+// 			   })
+// 			   .attr("cy", function(d) {
+// 			   		return h/8;
+// 			   })
+// 			   .attr("fill","lightpink")
+// 			   .attr("r", 10);
+// 			})
+////OPTION 2
+////click the button and take out old circles and add new circles that have new data
+			d3.selectAll('.button').on("click", function(){
+			console.log("button")
+			d3.selectAll('.otherCircle, .firstCircle')
+				.transition()
+				.attr("r", 1)
+				.remove();
+
+			var newCircles = svg.selectAll("newCircle")
+			   .data(dataset)
+			   .enter()
+			   .append("circle")
+			   .attr("class", "newCircle")
+			   .attr("cx", function(d) {
+			   		return xScale(d[0]);
+			   })
+			   .attr("cy", function(d) {
+			   		return h/8;
+			   })
+			   .attr("fill","lightpink")
+			   .attr("r", 10);
+			})
+
+			var newData = [
+			{
+				"properties":{
+				"Year":1987
+			},
+			},
+			{
+				"properties":{
+				"Year":1988
+			},
+			},
+			{
+				"properties":{
+				"Year":1989
+			},
+			}
+		];
+			var newDataTwo = [
+			{
+				"Year":1987,
+				"BA":2710,
+				"MA":8061,
+				"PhD":771,
+				"cumuBA":32710,
+				"cumuMA":8061,
+				"cumuPhD":771
+			},
+			{
+				"Year":1988,
+				"BA":1210,
+				"MA":8061,
+				"PhD":771,
+				"cumuBA":32710,
+				"cumuMA":8061,
+				"cumuPhD":771
+			},
+			{
+				"Year":1989,
+				"BA":2272,
+				"MA":8061,
+				"PhD":771,
+				"cumuBA":32710,
+				"cumuMA":8061,
+				"cumuPhD":771
+			},
+			{
+				"Year":1990,
+				"BA":971,
+				"MA":8061,
+				"PhD":771,
+				"cumuBA":32710,
+				"cumuMA":8061,
+				"cumuPhD":771
+			},
+			];		  
+var dataA,dataB,i,k;
+for (i = 0; i<newData.length; i++){
+	dataA = newData[i].properties.Year;
+		for (j=0; j<newDataTwo.length; j++){
+			dataB = newDataTwo[i].Year;
+			if (dataA==dataB){
+				newData[i].properties.Bachelors = newDataTwo[j].BA;
+			}
+		}
+}
+
+//OPTION 3
+//click the button and take out old circles and add new circles that have new data
+	d3.selectAll('.button').on("click", function(){
+		console.log(newData)
+
+	var circleGroups = svg.selectAll("circleGroups")
+	.data(newData)
+	.enter()
+	.append("circle")
+		.attr("class","moreCircles")
+		.attr("r", function(d,i){
+			return d.properties.Bachelors/100;
+		})
+		.attr("cx", function(d,i){
+			return 60+i*10;
+		})
+		.attr("cy", 40)
+		.attr("fill","orange")
+		.attr("opacity",.4);
+})
+
+		</script>
+	</body>
+</html>

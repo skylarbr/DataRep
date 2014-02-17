@@ -28,8 +28,8 @@
 			    .data(dataset)
 			    .enter()
 			    .append("circle");
-
-			circles.attr("cx", function(d, i) {
+			circles.attr("class",'sad')
+					.attr("cx", function(d, i) {
 						return (i * 50) + 25;
 					})
 				   .attr("cy", h/2)
@@ -37,6 +37,23 @@
 						return d;
 				   });
 
+		d3.selectAll('.sad')
+			.on("click", function () {
+			circles.transition()
+					.duration(300)
+					.attr("class",'happy')
+					.attr("fill","orange")
+					// .transition()
+					// .duration(300)
+					// .remove();
+			});
+		d3.select(this)
+			.on("click", function(){
+				circles.transition()
+					.duration(300)
+					.attr("class",'sad')
+					.attr("fill","black");
+			});
 		</script>
 	</body>
 </html>

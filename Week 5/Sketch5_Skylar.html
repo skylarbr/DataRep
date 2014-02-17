@@ -1,0 +1,212 @@
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Lookin' at FEMA Data for Sandy</title>
+        <script type="text/javascript" src="../js/d3.v3.js"></script>
+        <style type="text/css">
+            /* Any CSS style rules can go here */
+         .thursday {background-color: orange; font-family: sans-serif; font-size: 20; font-variant: black
+                }
+        </style>
+    </head>
+    <body>
+    <p>Woah there!</p>
+        <script type="text/javascript">
+        d3.select("p")
+            .append("p")
+            .text("D3 is running! :)");
+
+
+
+///////////DATA SET
+    var dataset;
+        d3.csv("Sandy_Renter_Data.csv", function(error, data) {
+
+        if (error) {  //If error is not null, something went wrong.
+          console.log(error);  //Log the error.
+        } else {      //If no error, the file loaded correctly. Yay
+            dataset = data;
+            console.log(data[3]);
+
+
+///////////FUNCTIONS FOR DATA
+
+    function listAll(data, category){
+        var item, categoryList, i;
+        categoryList = [];
+        for (i = 0;i<data.length; i++){ 
+            item = data[i];
+            if (category in item){
+                categoryList.push(item[category]);
+            }
+            }
+            return categoryList;
+        };
+            //generates an array of all categories
+
+
+    function onlyUnique(category, index, self) { 
+        return self.indexOf(category) === index;
+        } 
+            //finds unique categories
+
+
+    function uniqueList(data, category){
+        var allCategories = listAll(data, category);
+        var uniqueNames = allCategories.filter( onlyUnique );
+        return uniqueNames;}
+            //generates array of unique categories
+
+
+    function makeTempSet(data, category, value, i) { 
+        var tempSet = [];
+        var cat = listAll(data, category);
+        var val = listAll(data, value);
+        var obj = 0;
+       for (i=0;i<data.length;i++) {
+             var obj = {
+                        Categories: cat[i],
+                        Values:  val[i]
+                };
+                tempSet.push(obj);
+                };
+        return tempSet
+        };
+            // makes a temporay set for a given category and a given value
+
+
+    function valueConsolidation(data, category, value, givenName, i) { 
+        var total = 0;
+        var tempSet = makeTempSet(data, category, value, i);
+        for (i = 0;i<tempSet.length; i++){ 
+            if(tempSet[i].Categories == givenName){
+                total = total + parseInt(tempSet[i].Values);
+            }
+            else{}
+            }
+         return total;
+        };
+         //consolodates the values based on a given name from the temporary set
+
+
+    function uniqueTotals(data, category, value, i) {
+        var Totals = [];
+        var uniqueNames = uniqueList(data, category);
+        for (i = 0; i<uniqueNames.length; i++){
+            Totals[i]= valueConsolidation(data, category, value, uniqueNames[i])
+            };
+        return Totals
+        };
+        // makes a coresponding array of totals of a given value for a given set of unique categories
+
+
+    function consolidatedArray(data, category, value, i) {
+        var graphDataSet = [];
+        var uniqueNames = uniqueList(data, category);
+        var unqiueTotals = uniqueTotals(data, category, value)
+        var obj = 0;
+        for (i = 0; i<uniqueNames.length; i++){
+            var obj = {
+                        Category: uniqueNames[i],
+                        Value: unqiueTotals[i]
+                };
+            graphDataSet.push(obj)
+            };
+        return graphDataSet 
+        };
+        //creates a new aray with unique names and their respective totals
+
+//////////GRAPHICS 
+
+    var graphData = consolidatedArray(data, "County", "Approved_Assistance")
+    //specifies data
+    console.log(graphData)
+
+    var colors = ["#FF6600", "#FF6666", "#FF66CC"];
+    var heatmapColor = d3.scale.linear()
+                .domain(d3.range(0, 1, 1.0 / (colors.length - 1)))
+                .range(colors); 
+    var c = d3.scale.linear().domain(d3.extent(listAll(graphData, "Value"))).range([0,1]);
+    //sets color scale, just goofing around for now
+
+
+    var w = 1000;
+    var h = 400;
+    var xScale = d3.scale.ordinal()
+                .domain(d3.range(graphData.length))
+                .rangeRoundBands([0, w], 0.1);
+    var yScale = d3.scale.linear()
+                .domain([0, d3.max(listAll(graphData, "Value"))])
+                .range([0, h]);
+    //estabilshes width, height and x and y scales
+
+
+
+    var svgBars = d3.select("body")
+            .append("svg")
+            .attr("width", w)
+            .attr("height", h);
+
+        };
+    //creates svg object
+
+
+    var totalsBars = svgBars.selectAll("sad")
+                            .data(graphData)
+                            .enter()
+                            .append("rect")
+                            .attr("class","sad");
+                    totalsBars.attr("x", function(d,i) {
+                                                return  xScale(i);
+                                        })
+                                .attr("y", function(d) {
+                                                return h - yScale(d.Value);
+                                        })
+                                .attr("width", xScale.rangeBand())
+                                .attr("height", function(d) {
+                                                return yScale(d.Value); 
+                                            })
+                                .attr("fill", function(d) {
+                                                return heatmapColor(c(d.Value))
+                                            })
+                                .attr("stroke", "black");
+    // draws bars
+
+  // var textLable = svgBars.selectAll("text")
+  //                           .data(graphData)
+  //                           .enter()
+  //                           .append("text")
+  //                           .attr("class","sad")
+  //               textLable.attr("x", function(d,i) {
+  //                                               return  xScale(i) + xScale.rangeBand() / 2;
+  //                                       })
+  //                       .attr("y", h-10)
+  //                       .attr("font-family", "sans-serif")
+  //                       .attr("fill", "white")
+  //                       .style("text-anchor","middle")
+  //               textLable.text(function(d) {
+  //                                               return d.Category;
+  //                                           });
+    
+
+////////////INTERACTIVE
+
+var button = svgBars
+            .append("rect")
+            .attr("class","button")
+            .attr("x", 5)
+            .attr("y", 5)
+            .attr("width",100)
+            .attr("height",20)
+            .style("fill","lightblue")
+            .append("text")
+var buttontext= svgBars
+            .text("woah")
+
+
+
+//////////////////
+    })
+        </script>
+    </body>
+</html>
